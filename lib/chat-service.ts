@@ -34,21 +34,21 @@ export async function sendMessage(
       body: JSON.stringify({ text: contextString }),
     })
 
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`)
-    }
-
     const data = await response.json()
 
-    // Add error handling for missing response
-    if (!data || !data.response) {
-      return "No response received from the API"
+    if (!response.ok || !data) {
+      console.error("API Error:", { status: response.status, data })
+      return "Sorry, there was an error processing your request. Please try again."
+    }
+
+    if (!data.response) {
+      console.warn("Missing response in data:", data)
+      return "No response received from the API. Please try again."
     }
 
     return data.response
   } catch (error) {
     console.error("Error in sendMessage:", error)
-    // Return a user-friendly error message instead of throwing
-    return "Sorry, I couldn't process your request. Please try again later."
+    return "An unexpected error occurred. Please try again later."
   }
 }
